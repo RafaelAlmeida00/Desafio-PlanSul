@@ -39,6 +39,7 @@ model estoque {
   quantidade    Int       @default(0)
   atualizado_em DateTime? @default(now()) @db.Timestamp(6)
   produto       produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade)
+  criado_em  DateTime?         @default(now()) @db.Timestamp(6)
 }
 
 model estoque_movimentacoes {

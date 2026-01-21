@@ -1,3 +1,4 @@
+import prisma from '@/lib/db';
 import * as repository from '@/repositories/produtos.repository';
 import { produtos } from '@/generated/prisma/client';
 
@@ -9,10 +10,35 @@ export const getProdutoById = async (id: bigint): Promise<produtos | null> => {
   return repository.findById(id);
 };
 
-export const createProduto = async (data: Omit<produtos, 'id' | 'criado_em'>): Promise<produtos> => {
+export const createProduto = async (data: {
+  sku: string;
+  nome: string;
+  categoria_id?: bigint | null;
+  estoque_minimo?: number | null;
+  marca?: string | null;
+}): Promise<produtos> => {
   const { sku, nome, categoria_id, estoque_minimo, marca } = data;
-  const newProduto = await repository.create({ sku, nome, categoria_id, estoque_minimo, marca });
-  return newProduto;
+
+  return prisma.$transaction(async (tx) => {
+    const newProduto = await tx.produtos.create({
+      data: {
+        sku,
+        nome,
+        categoria_id,
+        estoque_minimo,
+        marca,
+      },
+    });
+
+    await tx.estoque.create({
+      data: {
+        produto_id: newProduto.id,
+        quantidade: 0,
+      },
+    });
+
+    return newProduto;
+  });
 };
 
 export const updateProduto = async (id: bigint, data: Partial<Omit<produtos, 'id' | 'criado_em'>>): Promise<produtos> => {

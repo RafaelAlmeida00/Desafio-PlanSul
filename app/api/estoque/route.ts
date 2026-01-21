@@ -11,18 +11,3 @@ export async function GET() {
     return NextResponse.json({ error: 'Falha ao buscar estoque' }, { status: 500 });
   }
 }
-
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { nome, descricao } = body;
-    if (!nome) {
-      return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
-    }
-    const newEstoque = await service.createEstoque({ nome, descricao });
-    return NextResponse.json(serializeBigInt(newEstoque), { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Falha ao criar estoque' }, { status: 500 });
-  }
-}
