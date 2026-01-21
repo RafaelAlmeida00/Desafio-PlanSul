@@ -124,6 +124,26 @@ Presentation > (Consome) > API Routes > (Consome) > Repositories (Consome) > Dat
 3. Nessa parte eu tinha a base já pronta, mas nenhuma regra de negócio implementada. Então pensei no que deveria ser implementado como regra de negócio pensando no sistema proposto e na descrição do desafio e cheguei a algumas conclusões. Implementei as regras de transação entre movimentações de estoque e o estoque do produto. A ideia foi usar transação Prisma para atomicidade, validar os estoques insuficiente para saídas, me dei liberdade de criar alguns errros customizáveis, para evitar problemas lógicos. 
 Então o estoque só pode ser alterado via movimentações, saídas maiores que estoque disponível são bloqueadas e movimentações são imutáveis.
 
+#### Implicacoes:
+1. **NAO deve existir** endpoint PUT/PATCH direto para alterar `estoque.quantidade`
+2. A quantidade so muda via `POST /api/estoque_movimentacoes`
+3. O service de movimentacoes deve:
+   - Validar se saida nao deixa estoque negativo
+   - Atualizar `estoque.quantidade` atomicamente
+   - Usar transacao para garantir consistencia
+
+#### Logica:
+```
+SE tipo == 'entrada':
+    estoque.quantidade += movimentacao.quantidade
+
+SE tipo == 'saida':
+    SE estoque.quantidade >= movimentacao.quantidade:
+        estoque.quantidade -= movimentacao.quantidade
+    SENAO:
+        ERRO: "Quantidade insuficiente em estoque"
+```
+
 4. Fiz testes diretos, não escrevi nenhum teste pois acredito que fugiria do escopo do desafio, mas ficará como observação na análise técnica.
 
 5. Por fim implementei o front-end, mantendo o padrão já estabelecido de ui/ux apenas fazendo o CRUD na tela.
