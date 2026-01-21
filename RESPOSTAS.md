@@ -128,7 +128,7 @@ Então o estoque só pode ser alterado via movimentações, saídas maiores que 
 
 5. Por fim implementei o front-end, mantendo o padrão já estabelecido de ui/ux apenas fazendo o CRUD na tela.
 
-6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração.
+6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração e atualizando o prisma.
 
 #### Backend
 
