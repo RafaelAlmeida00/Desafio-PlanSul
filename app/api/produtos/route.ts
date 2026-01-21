@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import * as service from '@/services/produtos.service';
+import { serializeBigInt } from '@/lib/serialize';
 
 export async function GET() {
-  return NextResponse.json({ error: 'erro desconhecido' }, { status: 500 });
+  try {
+    const produtos = await service.getAllProdutos();
+    return NextResponse.json(serializeBigInt(produtos));
+  } catch (error) {
+    console.error('Erro ao buscar produtos:', error);
+    return NextResponse.json({ error: 'Falha ao buscar produtos' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -21,12 +28,7 @@ export async function POST(request: Request) {
       estoque_minimo,
       marca,
     });
-    const newProdutoSerialized = JSON.parse(
-      JSON.stringify(newProduto, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    );
-    return NextResponse.json(newProdutoSerialized, { status: 201 });
+    return NextResponse.json(serializeBigInt(newProduto), { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Falha ao criar produto' }, { status: 500 });

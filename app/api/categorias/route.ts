@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import * as service from '@/services/categorias.service';
+import { serializeBigInt } from '@/lib/serialize';
 
 export async function GET() {
-  const categorias = await service.getAllCategorias();
-  const categoriasSerialized = categorias.map(categoria => {
-    return JSON.parse(
-      JSON.stringify(categoria, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    );
-  });
-  return NextResponse.json(categoriasSerialized);
+  try {
+    const categorias = await service.getAllCategorias();
+    return NextResponse.json(serializeBigInt(categorias));
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+    return NextResponse.json({ error: 'Falha ao buscar categorias' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -21,11 +20,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
     }
     const newCategoria = await service.createCategoria({ nome, descricao });
-    const newCategoriaSerialized = {
-      ...newCategoria,
-      id: newCategoria.id.toString()
-    };
-    return NextResponse.json(newCategoriaSerialized, { status: 201 });
+    return NextResponse.json(serializeBigInt(newCategoria), { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Falha ao criar categoria' }, { status: 500 });
