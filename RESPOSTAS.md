@@ -95,3 +95,25 @@ export async function GET() {
 
 #### Justificativa
 Implementei a função e corrigi um padrão de repetição de código criando `libs/serialize.ts` para implementar de forma eficiente e melhor manutenibilidade o método de serialização do array e adicionei try catch padronizando o get categorias também. 
+
+---
+
+### Parte 2: Modulo de Estoque
+
+#### Backend
+
+**Schema Prisma**
+
+**Repositories**
+
+**Services**
+
+**API Routes**
+
+#### Frontend
+
+**Hooks**
+
+**Componentes**
+
+**Integracao**

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as service from '@/services/produtos.service';
+import { serializeBigInt } from '@/lib/serialize';
 
 interface Params {
   params: Promise<{ id: string; }>;
@@ -11,12 +12,7 @@ export async function GET(request: Request, { params }: Params) {
     if (!produto) {
       return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
     }
-    const produtoSerialized = JSON.parse(
-      JSON.stringify(produto, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    );
-    return NextResponse.json(produtoSerialized);
+    return NextResponse.json(serializeBigInt(produto));
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
@@ -36,12 +32,7 @@ export async function PUT(request: Request, { params }: Params) {
       estoque_minimo,
       marca,
     });
-    const updatedProdutoSerialized = JSON.parse(
-      JSON.stringify(updatedProduto, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    );
-    return NextResponse.json(updatedProdutoSerialized);
+    return NextResponse.json(serializeBigInt(updatedProduto));
   } catch (error) {
     if (error instanceof Error && error.message.includes('not found')) {
       return NextResponse.json({ error: 'Produto não encontrado para atualização' }, { status: 404 });
