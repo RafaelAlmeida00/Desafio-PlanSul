@@ -45,11 +45,6 @@ export { Prisma }
  */
 export type categorias = Prisma.categoriasModel
 /**
- * Model estoque_movimentacoes
- * 
- */
-export type estoque_movimentacoes = Prisma.estoque_movimentacoesModel
-/**
  * Model produtos
  * 
  */
@@ -59,3 +54,8 @@ export type produtos = Prisma.produtosModel
  * 
  */
 export type estoque = Prisma.estoqueModel
+/**
+ * Model estoque_movimentacoes
+ * 
+ */
+export type estoque_movimentacoes = Prisma.estoque_movimentacoesModel

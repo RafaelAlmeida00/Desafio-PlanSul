@@ -17,10 +17,10 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.2.0",
-  "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
+  "clientVersion": "7.3.0",
+  "engineVersion": "9d6ad21cbbceab97458517b147a6a09ff43aa735",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel categorias {\n  id        BigInt     @id @default(autoincrement())\n  nome      String     @db.VarChar(100)\n  descricao String?\n  criado_em DateTime?  @default(now()) @db.Timestamp(6)\n  produtos  produtos[]\n}\n\nmodel estoque_movimentacoes {\n  id         BigInt            @id @default(autoincrement())\n  produto_id BigInt?\n  quantidade Int\n  tipo       tipo_movimentacao\n  criado_em  DateTime?         @default(now()) @db.Timestamp(6)\n  produtos   produtos?         @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel produtos {\n  id                    BigInt                  @id @default(autoincrement())\n  categoria_id          BigInt?\n  sku                   String                  @unique @db.VarChar(50)\n  nome                  String                  @db.VarChar(255)\n  estoque_minimo        Int?                    @default(0)\n  marca                 String?                 @default(\"Generico\") @db.VarChar(100)\n  criado_em             DateTime?               @default(now()) @db.Timestamp(6)\n  estoque_movimentacoes estoque_movimentacoes[]\n  categorias            categorias?             @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n  estoque               estoque?\n}\n\nmodel estoque {\n  id            BigInt    @id @default(autoincrement())\n  produto_id    BigInt    @unique\n  quantidade    Int\n  atualizado_em DateTime? @default(now()) @db.Timestamp(6)\n  produtos      produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade)\n}\n\nenum tipo_movimentacao {\n  entrada\n  saida\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel categorias {\n  id        BigInt     @id @default(autoincrement())\n  nome      String     @db.VarChar(100)\n  descricao String?\n  criado_em DateTime?  @default(now()) @db.Timestamp(6)\n  produtos  produtos[]\n}\n\nmodel produtos {\n  id                    BigInt                  @id @default(autoincrement())\n  categoria_id          BigInt?\n  sku                   String                  @unique @db.VarChar(50)\n  nome                  String                  @db.VarChar(255)\n  estoque_minimo        Int?                    @default(0)\n  marca                 String?                 @default(\"Generico\") @db.VarChar(100)\n  criado_em             DateTime?               @default(now()) @db.Timestamp(6)\n  categorias            categorias?             @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n  estoque               estoque?\n  estoque_movimentacoes estoque_movimentacoes[]\n}\n\nenum TipoMovimentacao {\n  entrada\n  saida\n}\n\nmodel estoque {\n  id            BigInt    @id @default(autoincrement())\n  produto_id    BigInt    @unique\n  quantidade    Int       @default(0)\n  atualizado_em DateTime? @default(now()) @db.Timestamp(6)\n  produto       produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade)\n  criado_em     DateTime? @default(now()) @db.Timestamp(6)\n}\n\nmodel estoque_movimentacoes {\n  id         BigInt           @id @default(autoincrement())\n  produto_id BigInt\n  quantidade Int\n  tipo       TipoMovimentacao\n  criado_em  DateTime?        @default(now()) @db.Timestamp(6)\n  produto    produtos         @relation(fields: [produto_id], references: [id], onDelete: Cascade)\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"categorias\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produtos\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"categoriasToprodutos\"}],\"dbName\":null},\"estoque_movimentacoes\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"quantidade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tipo\",\"kind\":\"enum\",\"type\":\"tipo_movimentacao\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produtos\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoque_movimentacoesToprodutos\"}],\"dbName\":null},\"produtos\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"categoria_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"sku\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"estoque_minimo\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"marca\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"estoque_movimentacoes\",\"kind\":\"object\",\"type\":\"estoque_movimentacoes\",\"relationName\":\"estoque_movimentacoesToprodutos\"},{\"name\":\"categorias\",\"kind\":\"object\",\"type\":\"categorias\",\"relationName\":\"categoriasToprodutos\"},{\"name\":\"estoque\",\"kind\":\"object\",\"type\":\"estoque\",\"relationName\":\"estoqueToprodutos\"}],\"dbName\":null},\"estoque\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"quantidade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"atualizado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produtos\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoqueToprodutos\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"categorias\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produtos\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"categoriasToprodutos\"}],\"dbName\":null},\"produtos\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"categoria_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"sku\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"estoque_minimo\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"marca\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"categorias\",\"kind\":\"object\",\"type\":\"categorias\",\"relationName\":\"categoriasToprodutos\"},{\"name\":\"estoque\",\"kind\":\"object\",\"type\":\"estoque\",\"relationName\":\"estoqueToprodutos\"},{\"name\":\"estoque_movimentacoes\",\"kind\":\"object\",\"type\":\"estoque_movimentacoes\",\"relationName\":\"estoque_movimentacoesToprodutos\"}],\"dbName\":null},\"estoque\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"quantidade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"atualizado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produto\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoqueToprodutos\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"estoque_movimentacoes\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"quantidade\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tipo\",\"kind\":\"enum\",\"type\":\"TipoMovimentacao\"},{\"name\":\"criado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"produto\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoque_movimentacoesToprodutos\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -37,12 +37,14 @@ async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Modul
 }
 
 config.compilerWasm = {
-  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_bg.postgresql.mjs"),
+  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
 
   getQueryCompilerWasmModule: async () => {
-    const { wasm } = await import("@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.mjs")
+    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs")
     return await decodeBase64AsWasm(wasm)
-  }
+  },
+
+  importName: "./query_compiler_fast_bg.js"
 }
 
 
@@ -185,16 +187,6 @@ export interface PrismaClient<
   get categorias(): Prisma.categoriasDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.estoque_movimentacoes`: Exposes CRUD operations for the **estoque_movimentacoes** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Estoque_movimentacoes
-    * const estoque_movimentacoes = await prisma.estoque_movimentacoes.findMany()
-    * ```
-    */
-  get estoque_movimentacoes(): Prisma.estoque_movimentacoesDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
    * `prisma.produtos`: Exposes CRUD operations for the **produtos** model.
     * Example usage:
     * ```ts
@@ -213,6 +205,16 @@ export interface PrismaClient<
     * ```
     */
   get estoque(): Prisma.estoqueDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.estoque_movimentacoes`: Exposes CRUD operations for the **estoque_movimentacoes** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Estoque_movimentacoes
+    * const estoque_movimentacoes = await prisma.estoque_movimentacoes.findMany()
+    * ```
+    */
+  get estoque_movimentacoes(): Prisma.estoque_movimentacoesDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

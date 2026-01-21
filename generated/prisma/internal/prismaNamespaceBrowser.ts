@@ -52,9 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   categorias: 'categorias',
-  estoque_movimentacoes: 'estoque_movimentacoes',
   produtos: 'produtos',
-  estoque: 'estoque'
+  estoque: 'estoque',
+  estoque_movimentacoes: 'estoque_movimentacoes'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -63,12 +63,12 @@ export type ModelName = (typeof ModelName)[keyof typeof ModelName]
  * Enums
  */
 
-export const TransactionIsolationLevel = {
+export const TransactionIsolationLevel = runtime.makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
-} as const
+} as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
@@ -81,17 +81,6 @@ export const CategoriasScalarFieldEnum = {
 } as const
 
 export type CategoriasScalarFieldEnum = (typeof CategoriasScalarFieldEnum)[keyof typeof CategoriasScalarFieldEnum]
-
-
-export const Estoque_movimentacoesScalarFieldEnum = {
-  id: 'id',
-  produto_id: 'produto_id',
-  quantidade: 'quantidade',
-  tipo: 'tipo',
-  criado_em: 'criado_em'
-} as const
-
-export type Estoque_movimentacoesScalarFieldEnum = (typeof Estoque_movimentacoesScalarFieldEnum)[keyof typeof Estoque_movimentacoesScalarFieldEnum]
 
 
 export const ProdutosScalarFieldEnum = {
@@ -111,10 +100,22 @@ export const EstoqueScalarFieldEnum = {
   id: 'id',
   produto_id: 'produto_id',
   quantidade: 'quantidade',
-  atualizado_em: 'atualizado_em'
+  atualizado_em: 'atualizado_em',
+  criado_em: 'criado_em'
 } as const
 
 export type EstoqueScalarFieldEnum = (typeof EstoqueScalarFieldEnum)[keyof typeof EstoqueScalarFieldEnum]
+
+
+export const Estoque_movimentacoesScalarFieldEnum = {
+  id: 'id',
+  produto_id: 'produto_id',
+  quantidade: 'quantidade',
+  tipo: 'tipo',
+  criado_em: 'criado_em'
+} as const
+
+export type Estoque_movimentacoesScalarFieldEnum = (typeof Estoque_movimentacoesScalarFieldEnum)[keyof typeof Estoque_movimentacoesScalarFieldEnum]
 
 
 export const SortOrder = {

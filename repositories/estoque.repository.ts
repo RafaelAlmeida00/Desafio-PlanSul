@@ -21,12 +21,13 @@ export const findByProdutoId = async (produto_id: bigint): Promise<estoque | nul
   });
 };
 
-export const create = async (produto_id: bigint): Promise<estoque> => {
+export const create = async (produto_id: bigint, quantidade: number = 0): Promise<estoque> => {
   return prisma.estoque.create({
     data: {
       produto_id,
-      quantidade: 0,
+      quantidade,
     },
+    include: { produto: true },
   });
 };
 

@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.2.0
- * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
+ * Prisma Client JS version: 7.3.0
+ * Query Engine version: 9d6ad21cbbceab97458517b147a6a09ff43aa735
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.2.0",
-  engine: "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3"
+  client: "7.3.0",
+  engine: "9d6ad21cbbceab97458517b147a6a09ff43aa735"
 }
 
 /**
@@ -385,9 +385,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   categorias: 'categorias',
-  estoque_movimentacoes: 'estoque_movimentacoes',
   produtos: 'produtos',
-  estoque: 'estoque'
+  estoque: 'estoque',
+  estoque_movimentacoes: 'estoque_movimentacoes'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "categorias" | "estoque_movimentacoes" | "produtos" | "estoque"
+    modelProps: "categorias" | "produtos" | "estoque" | "estoque_movimentacoes"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -478,80 +478,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.categoriasCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CategoriasCountAggregateOutputType> | number
-        }
-      }
-    }
-    estoque_movimentacoes: {
-      payload: Prisma.$estoque_movimentacoesPayload<ExtArgs>
-      fields: Prisma.estoque_movimentacoesFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.estoque_movimentacoesFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.estoque_movimentacoesFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        findFirst: {
-          args: Prisma.estoque_movimentacoesFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.estoque_movimentacoesFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        findMany: {
-          args: Prisma.estoque_movimentacoesFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
-        }
-        create: {
-          args: Prisma.estoque_movimentacoesCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        createMany: {
-          args: Prisma.estoque_movimentacoesCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.estoque_movimentacoesCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
-        }
-        delete: {
-          args: Prisma.estoque_movimentacoesDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        update: {
-          args: Prisma.estoque_movimentacoesUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        deleteMany: {
-          args: Prisma.estoque_movimentacoesDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.estoque_movimentacoesUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.estoque_movimentacoesUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
-        }
-        upsert: {
-          args: Prisma.estoque_movimentacoesUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
-        }
-        aggregate: {
-          args: Prisma.Estoque_movimentacoesAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateEstoque_movimentacoes>
-        }
-        groupBy: {
-          args: Prisma.estoque_movimentacoesGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Estoque_movimentacoesGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.estoque_movimentacoesCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Estoque_movimentacoesCountAggregateOutputType> | number
         }
       }
     }
@@ -703,6 +629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    estoque_movimentacoes: {
+      payload: Prisma.$estoque_movimentacoesPayload<ExtArgs>
+      fields: Prisma.estoque_movimentacoesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.estoque_movimentacoesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.estoque_movimentacoesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        findFirst: {
+          args: Prisma.estoque_movimentacoesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.estoque_movimentacoesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        findMany: {
+          args: Prisma.estoque_movimentacoesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
+        }
+        create: {
+          args: Prisma.estoque_movimentacoesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        createMany: {
+          args: Prisma.estoque_movimentacoesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.estoque_movimentacoesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
+        }
+        delete: {
+          args: Prisma.estoque_movimentacoesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        update: {
+          args: Prisma.estoque_movimentacoesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        deleteMany: {
+          args: Prisma.estoque_movimentacoesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.estoque_movimentacoesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.estoque_movimentacoesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>[]
+        }
+        upsert: {
+          args: Prisma.estoque_movimentacoesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$estoque_movimentacoesPayload>
+        }
+        aggregate: {
+          args: Prisma.Estoque_movimentacoesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEstoque_movimentacoes>
+        }
+        groupBy: {
+          args: Prisma.estoque_movimentacoesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Estoque_movimentacoesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.estoque_movimentacoesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Estoque_movimentacoesCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -752,17 +752,6 @@ export const CategoriasScalarFieldEnum = {
 export type CategoriasScalarFieldEnum = (typeof CategoriasScalarFieldEnum)[keyof typeof CategoriasScalarFieldEnum]
 
 
-export const Estoque_movimentacoesScalarFieldEnum = {
-  id: 'id',
-  produto_id: 'produto_id',
-  quantidade: 'quantidade',
-  tipo: 'tipo',
-  criado_em: 'criado_em'
-} as const
-
-export type Estoque_movimentacoesScalarFieldEnum = (typeof Estoque_movimentacoesScalarFieldEnum)[keyof typeof Estoque_movimentacoesScalarFieldEnum]
-
-
 export const ProdutosScalarFieldEnum = {
   id: 'id',
   categoria_id: 'categoria_id',
@@ -780,10 +769,22 @@ export const EstoqueScalarFieldEnum = {
   id: 'id',
   produto_id: 'produto_id',
   quantidade: 'quantidade',
-  atualizado_em: 'atualizado_em'
+  atualizado_em: 'atualizado_em',
+  criado_em: 'criado_em'
 } as const
 
 export type EstoqueScalarFieldEnum = (typeof EstoqueScalarFieldEnum)[keyof typeof EstoqueScalarFieldEnum]
+
+
+export const Estoque_movimentacoesScalarFieldEnum = {
+  id: 'id',
+  produto_id: 'produto_id',
+  quantidade: 'quantidade',
+  tipo: 'tipo',
+  criado_em: 'criado_em'
+} as const
+
+export type Estoque_movimentacoesScalarFieldEnum = (typeof Estoque_movimentacoesScalarFieldEnum)[keyof typeof Estoque_movimentacoesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -873,16 +874,16 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'tipo_movimentacao'
+ * Reference to a field of type 'TipoMovimentacao'
  */
-export type Enumtipo_movimentacaoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'tipo_movimentacao'>
+export type EnumTipoMovimentacaoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TipoMovimentacao'>
     
 
 
 /**
- * Reference to a field of type 'tipo_movimentacao[]'
+ * Reference to a field of type 'TipoMovimentacao[]'
  */
-export type ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'tipo_movimentacao[]'>
+export type ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TipoMovimentacao[]'>
     
 
 
@@ -995,9 +996,9 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   categorias?: Prisma.categoriasOmit
-  estoque_movimentacoes?: Prisma.estoque_movimentacoesOmit
   produtos?: Prisma.produtosOmit
   estoque?: Prisma.estoqueOmit
+  estoque_movimentacoes?: Prisma.estoque_movimentacoesOmit
 }
 
 /* Types for Logging */

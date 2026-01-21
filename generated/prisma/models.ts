@@ -10,4 +10,6 @@
  */
 export type * from './models/categorias'
 export type * from './models/produtos'
+export type * from './models/estoque'
+export type * from './models/estoque_movimentacoes'
 export type * from './commonInputTypes'

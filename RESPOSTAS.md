@@ -100,20 +100,102 @@ Implementei a função e corrigi um padrão de repetição de código criando `l
 
 ### Parte 2: Modulo de Estoque
 
+#### Processo de Implementação
+1. Primeiro eu analisei a arquitetura de como funcionava já a aplicação em layers, basicamente é:
+
+
+| Camada | Responsabilidade | Arquivos |
+|--------|------------------|----------|
+| **Presentation** | UI, interacao usuario, estado local | `components/`, `hooks/`, `app/page.tsx` |
+| **API Routes** | Endpoints HTTP, validacao, serializacao | `app/api/**/*.ts` |
+| **Services** | Logica de negocio, regras | `services/*.service.ts` |
+| **Repositories** | Queries Prisma, CRUD | `repositories/*.repository.ts` |
+| **Data** | Persistencia, schema | `prisma/`, `lib/db.ts` |
+
+Então temos uma visão de implementação clara:
+
+Presentation > (Consome) > API Routes > (Consome) > Repositories (Consome) > Database
+
+2. Depois de ter a visão das camadas que deveriam ser implementadas, ficou bem simples, pois o código já tem uma base que pode ser facilmente reutilizável, então a ordem dos layers pouco importou na implementação.
+
+2. 1. Primeiro implementei o schema de dados no Prisma e a API reutilizando o código.
+2. 2. Depois reutilizei os services e repositories para implementação.
+
+3. Nessa parte eu tinha a base já pronta, mas nenhuma regra de negócio implementada. Então pensei no que deveria ser implementado como regra de negócio pensando no sistema proposto e na descrição do desafio e cheguei a algumas conclusões. Implementei as regras de transação entre movimentações de estoque e o estoque do produto. A ideia foi usar transação Prisma para atomicidade, validar os estoques insuficiente para saídas, me dei liberdade de criar alguns errros customizáveis, para evitar problemas lógicos. 
+Então o estoque só pode ser alterado via movimentações, saídas maiores que estoque disponível são bloqueadas e movimentações são imutáveis.
+
+4. Fiz testes diretos, não escrevi nenhum teste pois acredito que fugiria do escopo do desafio, mas ficará como observação na análise técnica.
+
+5. Por fim implementei o front-end, mantendo o padrão já estabelecido de ui/ux apenas fazendo o CRUD na tela.
+
+6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração.
+
 #### Backend
 
 **Schema Prisma**
+model produtos {
+  id             BigInt      @id @default(autoincrement())
+  categoria_id   BigInt?
+  sku            String      @unique @db.VarChar(50)
+  nome           String      @db.VarChar(255)
+  estoque_minimo Int?        @default(0)
+  marca          String?     @default("Generico") @db.VarChar(100)
+  criado_em      DateTime?   @default(now()) @db.Timestamp(6)
+  categorias     categorias? @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  estoque        estoque?
+  estoque_movimentacoes estoque_movimentacoes[]
+}
+
+enum TipoMovimentacao {
+  entrada
+  saida
+}
+
+model estoque {
+  id            BigInt    @id @default(autoincrement())
+  produto_id    BigInt    @unique
+  quantidade    Int       @default(0)
+  atualizado_em DateTime? @default(now()) @db.Timestamp(6)
+  produto       produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade)
+  criado_em  DateTime?         @default(now()) @db.Timestamp(6)
+}
+
+model estoque_movimentacoes {
+  id         BigInt            @id @default(autoincrement())
+  produto_id BigInt
+  quantidade Int
+  tipo       TipoMovimentacao
+  criado_em  DateTime?         @default(now()) @db.Timestamp(6)
+  produto    produtos          @relation(fields: [produto_id], references: [id], onDelete: Cascade)
+}
+
 
 **Repositories**
+/repositories/estoque.repository.ts
+/repositories/estoque_movimentacoes.repository.ts
 
 **Services**
+/services/estoque.service.ts
+/services/estoque_movimentacoes.service.ts
 
 **API Routes**
+/api/estoque
+/api/estoque/[id]
+/api/estoque_movimentacoes
+/api/estoque_movimentacoes/[id]
 
 #### Frontend
 
 **Hooks**
+hooks/use-estoque.ts - Hook para buscar dados de estoque
+hooks/use-estoque-movimentacoes.ts - Hooks para buscar e criar movimentações
 
 **Componentes**
+components/estoque/estoque-columns.ts - Colunas da tabela de estoque
+components/movimentacoes/movimentacao-columns.ts - Colunas da tabela de movimentações
+components/movimentacoes/movimentacao-add-modal.tsx - Modal para registrar movimentações
+components/views/estoque-view.tsx - Tela de listagem do estoque
+components/views/movimentacoes-view.tsx - Tela de listagem de movimentações
 
 **Integracao**
+app/page.tsx - Adicionadas as abas "Estado do Estoque" e "Histórico de Movimentações"

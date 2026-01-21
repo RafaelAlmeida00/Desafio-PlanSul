@@ -1,3 +1,5 @@
+SET client_encoding TO 'UTF8';
+
 CREATE TABLE categorias (
     id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -19,7 +21,8 @@ CREATE TABLE estoque (
     id BIGSERIAL PRIMARY KEY,
     produto_id BIGINT UNIQUE REFERENCES produtos(id) ON DELETE CASCADE,
     quantidade INTEGER NOT NULL DEFAULT 0,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TYPE tipo_movimentacao AS ENUM ('entrada', 'saida');
@@ -62,4 +65,3 @@ INSERT INTO estoque (produto_id, quantidade) VALUES
 INSERT INTO estoque_movimentacoes (produto_id, quantidade, tipo) VALUES
 (1, 50, 'entrada'),
 (1, 5, 'saida');
-

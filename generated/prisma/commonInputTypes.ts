@@ -148,22 +148,15 @@ export type BigIntNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
 }
 
-export type IntFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+export type IntNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
   lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntFilter<$PrismaModel> | number
-}
-
-export type Enumtipo_movimentacaoFilter<$PrismaModel = never> = {
-  equals?: $Enums.tipo_movimentacao | Prisma.Enumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  in?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  notIn?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel> | $Enums.tipo_movimentacao
+  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
 }
 
 export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -182,6 +175,33 @@ export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBigIntNullableFilter<$PrismaModel>
 }
 
+export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
+export type IntFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
 export type IntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -198,41 +218,21 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
-export type Enumtipo_movimentacaoWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.tipo_movimentacao | Prisma.Enumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  in?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  notIn?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumtipo_movimentacaoWithAggregatesFilter<$PrismaModel> | $Enums.tipo_movimentacao
+export type EnumTipoMovimentacaoFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoMovimentacao | Prisma.EnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  in?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel> | $Enums.TipoMovimentacao
+}
+
+export type EnumTipoMovimentacaoWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoMovimentacao | Prisma.EnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  in?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTipoMovimentacaoWithAggregatesFilter<$PrismaModel> | $Enums.TipoMovimentacao
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel>
-}
-
-export type IntNullableFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
-}
-
-export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
-  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel>
 }
 
 export type NestedBigIntFilter<$PrismaModel = never> = {
@@ -393,13 +393,6 @@ export type NestedBigIntNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
 }
 
-export type NestedEnumtipo_movimentacaoFilter<$PrismaModel = never> = {
-  equals?: $Enums.tipo_movimentacao | Prisma.Enumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  in?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  notIn?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel> | $Enums.tipo_movimentacao
-}
-
 export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: bigint | number | Prisma.BigIntFieldRefInput<$PrismaModel> | null
   in?: bigint[] | number[] | Prisma.ListBigIntFieldRefInput<$PrismaModel> | null
@@ -427,6 +420,22 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
 }
 
+export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -443,30 +452,21 @@ export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
-export type NestedEnumtipo_movimentacaoWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.tipo_movimentacao | Prisma.Enumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  in?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  notIn?: $Enums.tipo_movimentacao[] | Prisma.ListEnumtipo_movimentacaoFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumtipo_movimentacaoWithAggregatesFilter<$PrismaModel> | $Enums.tipo_movimentacao
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumtipo_movimentacaoFilter<$PrismaModel>
+export type NestedEnumTipoMovimentacaoFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoMovimentacao | Prisma.EnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  in?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel> | $Enums.TipoMovimentacao
 }
 
-export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
-  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+export type NestedEnumTipoMovimentacaoWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoMovimentacao | Prisma.EnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  in?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TipoMovimentacao[] | Prisma.ListEnumTipoMovimentacaoFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTipoMovimentacaoWithAggregatesFilter<$PrismaModel> | $Enums.TipoMovimentacao
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTipoMovimentacaoFilter<$PrismaModel>
 }
 
 
