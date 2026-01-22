@@ -65,3 +65,8 @@ INSERT INTO estoque (produto_id, quantidade) VALUES
 INSERT INTO estoque_movimentacoes (produto_id, quantidade, tipo) VALUES
 (1, 50, 'entrada'),
 (1, 5, 'saida');
+
+SELECT setval('categorias_id_seq', (SELECT MAX(id) FROM categorias));
+SELECT setval('produtos_id_seq', (SELECT MAX(id) FROM produtos));
+SELECT setval('estoque_id_seq', (SELECT MAX(id) FROM estoque));
+SELECT setval('estoque_movimentacoes_id_seq', (SELECT MAX(id) FROM estoque_movimentacoes));

@@ -37,12 +37,24 @@ export async function POST(request: Request) {
       sku,
       nome,
       categoria_id: categoria_id ? BigInt(categoria_id) : null,
-      estoque_minimo,
+      estoque_minimo: estoque_minimo != null ? Number(estoque_minimo) : null,
       marca,
     });
     return NextResponse.json(serializeBigInt(newProduto), { status: 201 });
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    console.error('Erro ao criar produto:', error);
+
+    const prismaError = error as { code?: string; meta?: { field_name?: string; target?: string[] } };
+    console.error('Codigo do erro:', prismaError?.code, 'Meta:', prismaError?.meta);
+
+    if (prismaError?.code === 'P2002') {
+      const field = prismaError?.meta?.target?.[0] || 'campo';
+      return NextResponse.json({ error: `${field} já existe` }, { status: 400 });
+    }
+    if (prismaError?.code === 'P2003') {
+      return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 400 });
+    }
+
     return NextResponse.json({ error: 'Falha ao criar produto' }, { status: 500 });
   }
 }

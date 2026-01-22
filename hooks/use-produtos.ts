@@ -69,7 +69,7 @@ const createProduto = async (
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to create product");
+    throw new Error(errorData.error || "Falha ao criar produto");
   }
   return response.json();
 };
@@ -86,7 +86,7 @@ const updateProduto = async (
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to update product");
+    throw new Error(errorData.error || "Falha ao atualizar produto");
   }
   return response.json();
 };
@@ -97,7 +97,7 @@ const deleteProduto = async (id: string): Promise<void> => {
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to delete product");
+    throw new Error(errorData.error || "Falha ao excluir produto");
   }
 };
 

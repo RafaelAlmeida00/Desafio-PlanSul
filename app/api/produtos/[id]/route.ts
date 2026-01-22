@@ -29,14 +29,25 @@ export async function PUT(request: Request, { params }: Params) {
       sku,
       nome,
       categoria_id: categoria_id ? BigInt(categoria_id) : undefined,
-      estoque_minimo,
+      estoque_minimo: estoque_minimo != null ? Number(estoque_minimo) : undefined,
       marca,
     });
     return NextResponse.json(serializeBigInt(updatedProduto));
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof Error && error.message.includes('not found')) {
       return NextResponse.json({ error: 'Produto não encontrado para atualização' }, { status: 404 });
     }
+
+    if (error && typeof error === 'object' && 'code' in error) {
+      const prismaError = error as { code: string };
+      if (prismaError.code === 'P2002') {
+        return NextResponse.json({ error: 'SKU já existe' }, { status: 400 });
+      }
+      if (prismaError.code === 'P2003') {
+        return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 400 });
+      }
+    }
+
     return NextResponse.json({ error: 'Falha ao atualizar produto' }, { status: 500 });
   }
 }

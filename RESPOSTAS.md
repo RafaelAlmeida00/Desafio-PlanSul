@@ -94,7 +94,7 @@ export async function GET() {
 }
 
 #### Justificativa
-Implementei a função e corrigi um padrão de repetição de código criando `libs/serialize.ts` para implementar de forma eficiente e melhor manutenibilidade o método de serialização do array e adicionei try catch padronizando o get categorias também. 
+Implementei a função e corrigi um padrão de repetição de código criando `libs/serialize.ts` para implementar de forma eficiente e melhor manutenibilidade o método de serialização do array e adicionei try catch padronizando o get categorias também. (Depois padronizei tudo com try catch no código e exceções mais claras)
 
 ---
 
@@ -148,7 +148,7 @@ SE tipo == 'saida':
 
 5. Por fim implementei o front-end, mantendo o padrão já estabelecido de ui/ux apenas fazendo o CRUD na tela.
 
-6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração e atualizando o prisma. Testei implementar uma logica de criação de estoque atrelada ao produto, dando rollback nos existentes via seed no prisma. Porém, não achei funcional e mantive a regra de negócio de criação livre dos estoques.
+6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração e atualizando o prisma.
 
 #### Backend
 
@@ -264,6 +264,33 @@ confirmacao de saida em modais
 #### Abordagem Escolhida
 A abordagem que eu tive foi: Vamos implementar algumas regras de ouro do UI/UX, aprimorar e seguir o que foi pedido no teste em relação aos filtros. Mas não só implementar, criar facilidades para usuabilidade do usuário.
 Ao mesmo tempo podemos mesmo com poucos dados trabalhar com os dashboards e visualização da analise de dados.
+
+---
+
+### Parte Final: Testes Gerais
+
+#### Problema Identificado
+O schema de validação updateProdutoSchema e updateCategoriaSchema exigem o campo id, mas ele não está é enviado nos defaultValues.
+O react-hook-form com zodResolver falhava a validação silenciosamente quando campos obrigatórios estão faltando, impedindo o envio do formulário
+
+#### Processo de Investigacao
+1. Testei o envio pelo front, nada aconteceu.
+2. Analisei o fluxo do forms até perceber e vi de forma clara a falta do id enviado.
+
+#### Solucao Implementada
+Adicionei id incluído ele nos defaultValues
+
+---
+
+#### Problema Identificado
+Id incremental do schema prisma não seguia a sequência de implementação dos itens inciais do ao startar o banco, então conflitava novos itens com os iniciais gerando erro status 500.
+
+#### Processo de Investigacao
+1. Analisei via dev tools a requisição e ao analisar o payload percebi que o id estava conflitante com os itens iniciais criado no banco.
+2. Analisei os ids dos itens criados ao iniciar o banco e confirmei a suspeita.
+
+#### Solucao Implementada
+Corrigi direto no init.sql para resetar as sequências após os inserts.
 
 ---
 

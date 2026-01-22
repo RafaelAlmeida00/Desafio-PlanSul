@@ -54,7 +54,7 @@ const createCategory = async (
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to create category");
+    throw new Error(errorData.error || "Falha ao criar categoria");
   }
   return response.json();
 };
@@ -71,7 +71,7 @@ const updateCategory = async (
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to update category");
+    throw new Error(errorData.error || "Falha ao atualizar categoria");
   }
   return response.json();
 };
@@ -82,7 +82,7 @@ const deleteCategory = async (id: string): Promise<void> => {
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to delete category");
+    throw new Error(errorData.error || "Falha ao excluir categoria");
   }
 };
 

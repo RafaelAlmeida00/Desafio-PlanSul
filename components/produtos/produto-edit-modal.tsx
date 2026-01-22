@@ -88,6 +88,7 @@ export function EditProductModal({
           schema={updateProdutoSchema}
           onSubmit={handleSubmit}
           defaultValues={{
+            id: product.id,
             nome: product.nome,
             sku: product.sku,
             categoria_id: product.categoria_id || undefined,

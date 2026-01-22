@@ -31,6 +31,8 @@ model produtos {
 enum TipoMovimentacao {
   entrada
   saida
+
+  @@map("tipo_movimentacao")
 }
 
 model estoque {

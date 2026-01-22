@@ -60,6 +60,7 @@ export function EditCategoryModal({
           schema={updateCategoriaSchema}
           onSubmit={handleSubmit}
           defaultValues={{
+            id: category.id,
             nome: category.nome,
             descricao: category.descricao || "",
           }}
