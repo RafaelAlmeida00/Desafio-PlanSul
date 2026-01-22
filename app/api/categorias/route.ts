@@ -1,10 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as service from '@/services/categorias.service';
 import { serializeBigInt } from '@/lib/serialize';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const categorias = await service.getAllCategorias();
+    const searchParams = request.nextUrl.searchParams;
+    const busca = searchParams.get('busca') || undefined;
+    const page = searchParams.get('page');
+    const limit = searchParams.get('limit');
+
+    const categorias = await service.getAllCategorias({
+      busca,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+
     return NextResponse.json(serializeBigInt(categorias));
   } catch (error) {
     console.error('Erro ao buscar categorias:', error);

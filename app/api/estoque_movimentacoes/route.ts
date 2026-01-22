@@ -1,10 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as service from '@/services/estoqueMovimentacoes.service';
 import { serializeBigInt } from '@/lib/serialize';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const estoqueMovimentacoes = await service.getAllEstoqueMovimentacoes();
+    const searchParams = request.nextUrl.searchParams;
+    const produto_id = searchParams.get('produto_id');
+    const tipo = searchParams.get('tipo') as 'entrada' | 'saida' | null;
+    const page = searchParams.get('page');
+    const limit = searchParams.get('limit');
+
+    const estoqueMovimentacoes = await service.getAllEstoqueMovimentacoes({
+      produto_id: produto_id ? BigInt(produto_id) : undefined,
+      tipo: tipo && ['entrada', 'saida'].includes(tipo) ? tipo : undefined,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+
     return NextResponse.json(serializeBigInt(estoqueMovimentacoes));
   } catch (error) {
     console.error('Erro ao buscar movimentacao de estoque:', error);

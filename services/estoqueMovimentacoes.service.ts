@@ -1,11 +1,12 @@
 import prisma from '@/lib/db';
 import * as movimentacoesRepository from '@/repositories/estoqueMovimentacoes.repository';
+import { MovimentacaoFilters } from '@/repositories/estoqueMovimentacoes.repository';
 import { estoque_movimentacoes } from '@/generated/prisma/client';
 
 type TipoMovimentacao = 'entrada' | 'saida';
 
-export const getAllEstoqueMovimentacoes = async (): Promise<estoque_movimentacoes[]> => {
-  return movimentacoesRepository.findAll();
+export const getAllEstoqueMovimentacoes = async (filters?: MovimentacaoFilters): Promise<estoque_movimentacoes[]> => {
+  return movimentacoesRepository.findAll(filters);
 };
 
 export const getEstoqueMovimentacoesById = async (id: bigint): Promise<estoque_movimentacoes | null> => {

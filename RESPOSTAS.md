@@ -148,7 +148,7 @@ SE tipo == 'saida':
 
 5. Por fim implementei o front-end, mantendo o padrão já estabelecido de ui/ux apenas fazendo o CRUD na tela.
 
-6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração e atualizando o prisma.
+6. Tive alguns problemas de configuração do UTF-8, mas foi resolvido adicionando na string de conexão a declaração e atualizando o prisma. Testei implementar uma logica de criação de estoque atrelada ao produto, dando rollback nos existentes via seed no prisma. Porém, não achei funcional e mantive a regra de negócio de criação livre dos estoques.
 
 #### Backend
 
@@ -264,4 +264,3 @@ confirmacao de saida em modais
 #### Abordagem Escolhida
 A abordagem que eu tive foi: Vamos implementar algumas regras de ouro do UI/UX, aprimorar e seguir o que foi pedido no teste em relação aos filtros. Mas não só implementar, criar facilidades para usuabilidade do usuário.
 Ao mesmo tempo podemos mesmo com poucos dados trabalhar com os dashboards e visualização da analise de dados.
-
