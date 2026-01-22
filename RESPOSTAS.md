@@ -121,7 +121,7 @@ Presentation > (Consome) > API Routes > (Consome) > Repositories (Consome) > Dat
 2. 1. Primeiro implementei o schema de dados no Prisma e a API reutilizando o código.
 2. 2. Depois reutilizei os services e repositories para implementação.
 
-3. Nessa parte eu tinha a base já pronta, mas nenhuma regra de negócio implementada. Então pensei no que deveria ser implementado como regra de negócio pensando no sistema proposto e na descrição do desafio e cheguei a algumas conclusões. Implementei as regras de transação entre movimentações de estoque e o estoque do produto. A ideia foi usar transação Prisma para atomicidade, validar os estoques insuficiente para saídas, me dei liberdade de criar alguns errros customizáveis, para evitar problemas lógicos. 
+3. Nessa parte eu tinha a base já pronta, mas nenhuma regra de negócio implementada. Então pensei no que deveria ser implementado como regra de negócio pensando no sistema proposto e na descrição do desafio e cheguei a algumas conclusões. Implementei as regras de transação entre movimentações de estoque e o estoque do produto. A ideia foi usar transação Prisma para atomicidade, validar os estoques insuficiente para saídas, me dei liberdade de alguns errros customizáveis, para evitar problemas lógicos. 
 Então o estoque só pode ser alterado via movimentações, saídas maiores que estoque disponível são bloqueadas e movimentações são imutáveis.
 
 #### Implicacoes:
@@ -208,7 +208,7 @@ model estoque_movimentacoes {
 
 **Hooks**
 hooks/use-estoque.ts - Hook para buscar dados de estoque
-hooks/use-estoque-movimentacoes.ts - Hooks para buscar e criar movimentações
+hooks/use-estoque-movimentacoes.ts - Hooks para buscar e movimentações
 
 **Componentes**
 components/estoque/estoque-columns.ts - Colunas da tabela de estoque
@@ -219,3 +219,49 @@ components/views/movimentacoes-view.tsx - Tela de listagem de movimentações
 
 **Integracao**
 app/page.tsx - Adicionadas as abas "Estado do Estoque" e "Histórico de Movimentações"
+
+---
+
+### Parte 3: Filtros e Ordenacao
+
+#### Funcionalidades Implementadas
+Componentes UI:
+badge.tsx - Badge do shadcn com variantes (default, secondary, destructive, success, warning)
+checkbox.tsx - Checkbox do Radix UI para selecao em lote
+
+Componentes Custom:
+search-input.tsx - Input de busca com debounce (300ms)
+filter-pills.tsx - Pills visuais de filtros ativos
+metrics-cards.tsx - Cards de metricas do dashboard
+movements-chart.tsx - Grafico de barras com recharts
+
+Filtros por Entidade:
+produto-filters.tsx - Filtros de categoria, marca e estoque baixo
+movimentacao-filters.tsx - Filtros de tipo, produto e periodo
+estoque-filters.tsx - Filtro de status (OK, baixo, critico)
+
+Hooks:
+use-debounce.ts - Hook de debounce generico
+use-dashboard-metrics.ts - Hook para metricas do dashboard
+Arquivos Atualizados
+data-table.tsx - Ordenacao visual, selecao em lote, empty states, filter pills
+produtos-view.tsx - Integrado filtros, busca e filter pills
+movimentacoes-view.tsx - Integrado filtros com datas e filter pills
+estoque-view.tsx - Integrado filtro de status e filter pills
+page.tsx - Adicionado dashboard com cards de metricas e grafico
+
+Funcionalidades Implementadas:
+Ordenacao Visual - Clique nos headers para ordenar, icones indicando direcao
+Filter Pills - Tags visuais mostrando filtros ativos com botao de remover
+Busca com Debounce - Campo de busca com debounce de 300ms
+Dashboard de Metricas - Cards com total produtos, estoque baixo, entradas/saidas hoje
+Grafico de Movimentacoes - Barras de entradas vs saidas dos ultimos 7 dias
+Filtros por Entidade - Filtros especificos para produtos, movimentacoes e estoque
+Empty States Contextuais - Mensagens uteis quando nao ha dados ou resultados
+Selecao em Lote - Estrutura pronta (enableSelection prop no DataTable)
+confirmacao de saida em modais
+
+#### Abordagem Escolhida
+A abordagem que eu tive foi: Vamos implementar algumas regras de ouro do UI/UX, aprimorar e seguir o que foi pedido no teste em relação aos filtros. Mas não só implementar, criar facilidades para usuabilidade do usuário.
+Ao mesmo tempo podemos mesmo com poucos dados trabalhar com os dashboards e visualização da analise de dados.
+
