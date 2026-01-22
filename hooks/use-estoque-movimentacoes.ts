@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
+import { ApiError, handleFetchError } from "@/lib/api-error";
+import { generateIdempotencyKey } from "@/lib/idempotency";
 
 export const createMovimentacaoSchema = z.object({
   produto_id: z.string().min(1, "Produto é obrigatório"),
@@ -25,7 +27,7 @@ export type CreateMovimentacaoPayload = z.infer<typeof createMovimentacaoSchema>
 const fetchMovimentacoes = async (): Promise<EstoqueMovimentacao[]> => {
   const response = await fetch("/api/estoque_movimentacoes");
   if (!response.ok) {
-    throw new Error("Failed to fetch movements");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -33,10 +35,14 @@ const fetchMovimentacoes = async (): Promise<EstoqueMovimentacao[]> => {
 const createMovimentacao = async (
   payload: CreateMovimentacaoPayload
 ): Promise<EstoqueMovimentacao> => {
+  // Gerar chave de idempotência única para esta requisição
+  const idempotencyKey = generateIdempotencyKey();
+
   const response = await fetch("/api/estoque_movimentacoes", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
     },
     body: JSON.stringify({
       produto_id: Number(payload.produto_id),
@@ -44,15 +50,15 @@ const createMovimentacao = async (
       tipo: payload.tipo,
     }),
   });
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Failed to create movement");
+    return handleFetchError(response);
   }
   return response.json();
 };
 
 export const useEstoqueMovimentacoes = () => {
-  return useQuery<EstoqueMovimentacao[], Error>({
+  return useQuery<EstoqueMovimentacao[], ApiError>({
     queryKey: ["estoque_movimentacoes"],
     queryFn: fetchMovimentacoes,
   });
@@ -60,7 +66,7 @@ export const useEstoqueMovimentacoes = () => {
 
 export const useCreateMovimentacao = () => {
   const queryClient = useQueryClient();
-  return useMutation<EstoqueMovimentacao, Error, CreateMovimentacaoPayload>({
+  return useMutation<EstoqueMovimentacao, ApiError, CreateMovimentacaoPayload>({
     mutationFn: createMovimentacao,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["estoque_movimentacoes"] });

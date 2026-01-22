@@ -261,6 +261,9 @@ Empty States Contextuais - Mensagens uteis quando nao ha dados ou resultados
 Selecao em Lote - Estrutura pronta (enableSelection prop no DataTable)
 confirmacao de saida em modais
 
+Melhoria nos feedbacks dos erros
+Idempotência nas requisições
+
 #### Abordagem Escolhida
 A abordagem que eu tive foi: Vamos implementar algumas regras de ouro do UI/UX, aprimorar e seguir o que foi pedido no teste em relação aos filtros. Mas não só implementar, criar facilidades para usuabilidade do usuário.
 Ao mesmo tempo podemos mesmo com poucos dados trabalhar com os dashboards e visualização da analise de dados.
@@ -558,3 +561,7 @@ Temas claro/escuro
 Acessibilidade ARIA labels
 Onboarding Tour guiado para novos usuarios
 Bulk actions para Editar/excluir multiplos itens
+
+---
+
+Observações: Eu até pensei na implementação de muitas desses pontos de melhoria e proximos passos, porém, como o proprio teste deixa esse objetivo de reflexão, decidi por não implementar muito além, parando no sistema de idempotencia. Meus proximos passos diretos seriam aplicar o rate-limit e um tour guiado.

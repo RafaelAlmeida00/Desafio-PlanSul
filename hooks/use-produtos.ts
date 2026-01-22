@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
+import { ApiError, handleFetchError } from "@/lib/api-error";
 
 // Zod Schemas
 export const createProdutoSchema = z.object({
@@ -44,7 +45,7 @@ export type UpdateProdutoPayload = z.infer<typeof updateProdutoSchema>;
 const fetchProdutos = async (): Promise<Produto[]> => {
   const response = await fetch("/api/produtos");
   if (!response.ok) {
-    throw new Error("Failed to fetch products");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -52,7 +53,7 @@ const fetchProdutos = async (): Promise<Produto[]> => {
 const fetchProdutoById = async (id: string): Promise<Produto> => {
   const response = await fetch(`/api/produtos/${id}`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch product with ID ${id}`);
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -68,8 +69,7 @@ const createProduto = async (
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao criar produto");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -85,8 +85,7 @@ const updateProduto = async (
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao atualizar produto");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -95,22 +94,27 @@ const deleteProduto = async (id: string): Promise<void> => {
   const response = await fetch(`/api/produtos/${id}`, {
     method: "DELETE",
   });
+
+  // 204 No Content é sucesso, não tem body
+  if (response.status === 204) {
+    return;
+  }
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao excluir produto");
+    return handleFetchError(response);
   }
 };
 
 // React Query Hooks
 export const useProdutos = () => {
-  return useQuery<Produto[], Error>({
+  return useQuery<Produto[], ApiError>({
     queryKey: ["produtos"],
     queryFn: fetchProdutos,
   });
 };
 
 export const useProduto = (id: string) => {
-  return useQuery<Produto, Error>({
+  return useQuery<Produto, ApiError>({
     queryKey: ["produtos", id],
     queryFn: () => fetchProdutoById(id),
     enabled: !!id,
@@ -119,7 +123,7 @@ export const useProduto = (id: string) => {
 
 export const useCreateProduto = () => {
   const queryClient = useQueryClient();
-  return useMutation<Produto, Error, CreateProdutoPayload>({
+  return useMutation<Produto, ApiError, CreateProdutoPayload>({
     mutationFn: createProduto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["produtos"] });
@@ -129,7 +133,7 @@ export const useCreateProduto = () => {
 
 export const useUpdateProduto = () => {
   const queryClient = useQueryClient();
-  return useMutation<Produto, Error, UpdateProdutoPayload>({
+  return useMutation<Produto, ApiError, UpdateProdutoPayload>({
     mutationFn: updateProduto,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["produtos"] });
@@ -140,7 +144,7 @@ export const useUpdateProduto = () => {
 
 export const useDeleteProduto = () => {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, string>({
+  return useMutation<void, ApiError, string>({
     mutationFn: deleteProduto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["produtos"] });

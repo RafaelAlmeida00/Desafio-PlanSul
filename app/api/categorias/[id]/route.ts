@@ -1,58 +1,57 @@
-import { NextResponse } from 'next/server';
 import * as service from '@/services/categorias.service';
-import { serializeBigInt } from '@/lib/serialize';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  noContentResponse,
+} from '@/lib/api-response';
+import { NotFoundError, ValidationError } from '@/lib/errors';
 
 interface Params {
-  params: Promise<{ id: string; }>;
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(
-  request: Request,
-  { params }: Params
-) {
+export async function GET(request: Request, { params }: Params) {
   try {
-    const id = BigInt((await params).id);
+    const idStr = (await params).id;
+    const id = BigInt(idStr);
+
     const categoria = await service.getCategoriaById(id);
     if (!categoria) {
-      return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 404 });
+      return errorResponse(new NotFoundError('Categoria', idStr));
     }
 
-    return NextResponse.json(serializeBigInt(categoria));
+    return successResponse(categoria);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    if (error instanceof SyntaxError || (error as Error).message?.includes('BigInt')) {
+      return errorResponse(new ValidationError('ID inválido'));
+    }
+    return handleApiError(error, { entity: 'categoria', operation: 'create' });
   }
 }
 
-export async function PUT(
-  request: Request, { params }: Params
-) {
+export async function PUT(request: Request, { params }: Params) {
   try {
-    const id = BigInt((await params).id);
+    const idStr = (await params).id;
+    const id = BigInt(idStr);
     const body = await request.json();
     const { nome, descricao } = body;
 
     const updatedCategoria = await service.updateCategoria(id, { nome, descricao });
-    return NextResponse.json(serializeBigInt(updatedCategoria));
+    return successResponse(updatedCategoria);
   } catch (error) {
-    if (error instanceof Error && error.message.includes('not found')) {
-      return NextResponse.json({ error: 'Categoria não encontrada para atualização' }, { status: 404 });
-    }
-    return NextResponse.json({ error: 'Falha ao atualizar categoria' }, { status: 500 });
+    return handleApiError(error, { entity: 'categoria', operation: 'update' });
   }
 }
 
-export async function DELETE(
-  request: Request, { params }: Params
-) {
+export async function DELETE(request: Request, { params }: Params) {
   try {
-    const id = BigInt((await params).id);
+    const idStr = (await params).id;
+    const id = BigInt(idStr);
+
     await service.deleteCategoria(id);
-    return new NextResponse(null, { status: 204 });
+    return noContentResponse();
   } catch (error) {
-    if (error instanceof Error && error.message.includes('not found')) {
-      return NextResponse.json({ error: 'Categoria não encontrada para exclusão' }, { status: 404 });
-    }
-    return NextResponse.json({ error: 'Falha ao excluir categoria' }, { status: 500 });
+    return handleApiError(error, { entity: 'categoria', operation: 'delete' });
   }
 }

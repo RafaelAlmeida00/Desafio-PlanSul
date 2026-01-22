@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import * as service from '@/services/produtos.service';
-import { serializeBigInt } from '@/lib/serialize';
+import { successResponse, handleApiError, errorResponse } from '@/lib/api-response';
+import { ValidationError } from '@/lib/errors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,10 +18,9 @@ export async function GET(request: NextRequest) {
       limit: limit ? parseInt(limit, 10) : undefined,
     });
 
-    return NextResponse.json(serializeBigInt(produtos));
+    return successResponse(produtos);
   } catch (error) {
-    console.error('Erro ao buscar produtos:', error);
-    return NextResponse.json({ error: 'Falha ao buscar produtos' }, { status: 500 });
+    return handleApiError(error, { entity: 'produto', operation: 'create' });
   }
 }
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const { sku, nome, categoria_id, estoque_minimo, marca } = body;
 
     if (!sku || !nome) {
-      return NextResponse.json({ error: 'SKU e Nome são obrigatórios' }, { status: 400 });
+      return errorResponse(new ValidationError('SKU e Nome são obrigatórios'));
     }
 
     const newProduto = await service.createProduto({
@@ -40,21 +40,9 @@ export async function POST(request: Request) {
       estoque_minimo: estoque_minimo != null ? Number(estoque_minimo) : null,
       marca,
     });
-    return NextResponse.json(serializeBigInt(newProduto), { status: 201 });
-  } catch (error: unknown) {
-    console.error('Erro ao criar produto:', error);
 
-    const prismaError = error as { code?: string; meta?: { field_name?: string; target?: string[] } };
-    console.error('Codigo do erro:', prismaError?.code, 'Meta:', prismaError?.meta);
-
-    if (prismaError?.code === 'P2002') {
-      const field = prismaError?.meta?.target?.[0] || 'campo';
-      return NextResponse.json({ error: `${field} já existe` }, { status: 400 });
-    }
-    if (prismaError?.code === 'P2003') {
-      return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 400 });
-    }
-
-    return NextResponse.json({ error: 'Falha ao criar produto' }, { status: 500 });
+    return successResponse(newProduto, 201);
+  } catch (error) {
+    return handleApiError(error, { entity: 'produto', operation: 'create' });
   }
 }

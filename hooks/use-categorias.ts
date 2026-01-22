@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
+import { ApiError, handleFetchError } from "@/lib/api-error";
 
 // Zod Schemas
 export const createCategoriaSchema = z.object({
@@ -29,7 +30,7 @@ export type UpdateCategoriaPayload = z.infer<typeof updateCategoriaSchema>;
 const fetchCategories = async (): Promise<Categoria[]> => {
   const response = await fetch("/api/categorias");
   if (!response.ok) {
-    throw new Error("Failed to fetch categories");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -37,7 +38,7 @@ const fetchCategories = async (): Promise<Categoria[]> => {
 const fetchCategoryById = async (id: string): Promise<Categoria> => {
   const response = await fetch(`/api/categorias/${id}`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch category with ID ${id}`);
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -53,8 +54,7 @@ const createCategory = async (
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao criar categoria");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -70,8 +70,7 @@ const updateCategory = async (
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao atualizar categoria");
+    return handleFetchError(response);
   }
   return response.json();
 };
@@ -80,22 +79,27 @@ const deleteCategory = async (id: string): Promise<void> => {
   const response = await fetch(`/api/categorias/${id}`, {
     method: "DELETE",
   });
+
+  // 204 No Content é sucesso, não tem body
+  if (response.status === 204) {
+    return;
+  }
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "Falha ao excluir categoria");
+    return handleFetchError(response);
   }
 };
 
 // React Query Hooks
 export const useCategories = () => {
-  return useQuery<Categoria[], Error>({
+  return useQuery<Categoria[], ApiError>({
     queryKey: ["categorias"],
     queryFn: fetchCategories,
   });
 };
 
 export const useCategory = (id: string) => {
-  return useQuery<Categoria, Error>({
+  return useQuery<Categoria, ApiError>({
     queryKey: ["categorias", id],
     queryFn: () => fetchCategoryById(id),
     enabled: !!id, // Only run the query if id is truthy
@@ -104,7 +108,7 @@ export const useCategory = (id: string) => {
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
-  return useMutation<Categoria, Error, CreateCategoriaPayload>({
+  return useMutation<Categoria, ApiError, CreateCategoriaPayload>({
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categorias"] });
@@ -114,7 +118,7 @@ export const useCreateCategory = () => {
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
-  return useMutation<Categoria, Error, UpdateCategoriaPayload>({
+  return useMutation<Categoria, ApiError, UpdateCategoriaPayload>({
     mutationFn: updateCategory,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["categorias"] });
@@ -125,7 +129,7 @@ export const useUpdateCategory = () => {
 
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, string>({
+  return useMutation<void, ApiError, string>({
     mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categorias"] });

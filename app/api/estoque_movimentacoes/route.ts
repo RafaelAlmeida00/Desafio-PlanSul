@@ -1,6 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import * as service from '@/services/estoqueMovimentacoes.service';
-import { serializeBigInt } from '@/lib/serialize';
+import { successResponse, handleApiError, errorResponse } from '@/lib/api-response';
+import { ValidationError, NotFoundError, BusinessRuleError } from '@/lib/errors';
+import {
+  checkIdempotency,
+  saveIdempotencyResponse,
+  clearIdempotencyKey,
+} from '@/lib/idempotency-handler';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,26 +23,41 @@ export async function GET(request: NextRequest) {
       limit: limit ? parseInt(limit, 10) : undefined,
     });
 
-    return NextResponse.json(serializeBigInt(estoqueMovimentacoes));
+    return successResponse(estoqueMovimentacoes);
   } catch (error) {
-    console.error('Erro ao buscar movimentacao de estoque:', error);
-    return NextResponse.json({ error: 'Falha ao buscar movimentacao de estoque' }, { status: 500 });
+    return handleApiError(error, { entity: 'movimentação', operation: 'create' });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // Verificar idempotência
+  const idempotencyResult = checkIdempotency(request);
+
+  if (!idempotencyResult.shouldProcess) {
+    return idempotencyResult.cachedResponse!;
+  }
+
+  const { idempotencyKey } = idempotencyResult;
+
   try {
     const body = await request.json();
     const { produto_id, quantidade, tipo } = body;
 
+    // Validações
     if (!produto_id) {
-      return NextResponse.json({ error: 'produto_id é obrigatório' }, { status: 400 });
+      const response = errorResponse(new ValidationError('produto_id é obrigatório'));
+      if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
+      return response;
     }
     if (quantidade === undefined || quantidade === null || quantidade <= 0) {
-      return NextResponse.json({ error: 'quantidade deve ser maior que zero' }, { status: 400 });
+      const response = errorResponse(new ValidationError('quantidade deve ser maior que zero'));
+      if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
+      return response;
     }
     if (!tipo || !['entrada', 'saida'].includes(tipo)) {
-      return NextResponse.json({ error: 'tipo deve ser "entrada" ou "saida"' }, { status: 400 });
+      const response = errorResponse(new ValidationError('tipo deve ser "entrada" ou "saida"'));
+      if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
+      return response;
     }
 
     const newMovimentacao = await service.createEstoqueMovimentacoes({
@@ -45,17 +66,30 @@ export async function POST(request: Request) {
       tipo,
     });
 
-    return NextResponse.json(serializeBigInt(newMovimentacao), { status: 201 });
-  } catch (error) {
-    console.error('Erro ao criar movimentacao de estoque:', error);
+    const response = successResponse(newMovimentacao, 201);
 
+    // Salvar resposta para idempotência
+    if (idempotencyKey) {
+      await saveIdempotencyResponse(idempotencyKey, response);
+    }
+
+    return response;
+  } catch (error) {
+    // Em caso de erro, limpar o lock de idempotência
+    if (idempotencyKey) {
+      clearIdempotencyKey(idempotencyKey);
+    }
+
+    // Tratar erros específicos do service
     if (error instanceof service.EstoqueInsuficienteError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return errorResponse(
+        new BusinessRuleError(error.message, 'ESTOQUE_INSUFICIENTE')
+      );
     }
     if (error instanceof service.EstoqueNaoEncontradoError) {
-      return NextResponse.json({ error: error.message }, { status: 404 });
+      return errorResponse(new NotFoundError('Estoque para o produto'));
     }
 
-    return NextResponse.json({ error: 'Falha ao criar movimentacao de estoque' }, { status: 500 });
+    return handleApiError(error, { entity: 'movimentação', operation: 'create' });
   }
 }

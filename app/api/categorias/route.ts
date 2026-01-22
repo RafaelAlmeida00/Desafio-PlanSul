@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import * as service from '@/services/categorias.service';
-import { serializeBigInt } from '@/lib/serialize';
+import { successResponse, handleApiError, errorResponse } from '@/lib/api-response';
+import { ValidationError } from '@/lib/errors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,10 +16,9 @@ export async function GET(request: NextRequest) {
       limit: limit ? parseInt(limit, 10) : undefined,
     });
 
-    return NextResponse.json(serializeBigInt(categorias));
+    return successResponse(categorias);
   } catch (error) {
-    console.error('Erro ao buscar categorias:', error);
-    return NextResponse.json({ error: 'Falha ao buscar categorias' }, { status: 500 });
+    return handleApiError(error, { entity: 'categoria', operation: 'create' });
   }
 }
 
@@ -26,13 +26,14 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { nome, descricao } = body;
+
     if (!nome) {
-      return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
+      return errorResponse(new ValidationError('Nome é obrigatório'));
     }
+
     const newCategoria = await service.createCategoria({ nome, descricao });
-    return NextResponse.json(serializeBigInt(newCategoria), { status: 201 });
+    return successResponse(newCategoria, 201);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Falha ao criar categoria' }, { status: 500 });
+    return handleApiError(error, { entity: 'categoria', operation: 'create' });
   }
 }
