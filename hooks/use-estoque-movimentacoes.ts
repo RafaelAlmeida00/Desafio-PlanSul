@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
 import { ApiError, handleFetchError } from "@/lib/api-error";
-import { generateIdempotencyKey } from "@/lib/idempotency";
 
 export const createMovimentacaoSchema = z.object({
   produto_id: z.string().min(1, "Produto é obrigatório"),
@@ -35,14 +34,10 @@ const fetchMovimentacoes = async (): Promise<EstoqueMovimentacao[]> => {
 const createMovimentacao = async (
   payload: CreateMovimentacaoPayload
 ): Promise<EstoqueMovimentacao> => {
-  // Gerar chave de idempotência única para esta requisição
-  const idempotencyKey = generateIdempotencyKey();
-
   const response = await fetch("/api/estoque_movimentacoes", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Idempotency-Key": idempotencyKey,
     },
     body: JSON.stringify({
       produto_id: Number(payload.produto_id),

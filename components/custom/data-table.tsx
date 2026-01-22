@@ -190,10 +190,10 @@ export function DataTable<TData extends { id: string }, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4 gap-2 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center py-4 gap-3">
         {searchComponent}
         {filterComponent}
-        <div className="ml-auto flex gap-2">
+        <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap gap-2">
           {actionButtons?.map((button, index) => (
             <React.Fragment key={index}>{button}</React.Fragment>
           ))}
@@ -219,7 +219,7 @@ export function DataTable<TData extends { id: string }, TValue>({
         </div>
       )}
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -305,7 +305,7 @@ export function DataTable<TData extends { id: string }, TValue>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between py-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-3">
         <div className="text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} de {data.length} itens
         </div>

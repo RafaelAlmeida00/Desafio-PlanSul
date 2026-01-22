@@ -61,7 +61,7 @@ export function ProdutoFiltersComponent({
         value={filters.categoria_id || "all"}
         onValueChange={handleCategoriaChange}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Categoria" />
         </SelectTrigger>
         <SelectContent>
@@ -79,7 +79,7 @@ export function ProdutoFiltersComponent({
           value={filters.marca || "all"}
           onValueChange={handleMarcaChange}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Marca" />
           </SelectTrigger>
           <SelectContent>

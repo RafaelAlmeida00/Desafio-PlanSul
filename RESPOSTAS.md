@@ -263,6 +263,7 @@ confirmacao de saida em modais
 
 Melhoria nos feedbacks dos erros
 Idempotência nas requisições
+Melhoria na responsividade
 
 #### Abordagem Escolhida
 A abordagem que eu tive foi: Vamos implementar algumas regras de ouro do UI/UX, aprimorar e seguir o que foi pedido no teste em relação aos filtros. Mas não só implementar, criar facilidades para usuabilidade do usuário.

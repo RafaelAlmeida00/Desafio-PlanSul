@@ -37,7 +37,7 @@ export function EstoqueFiltersComponent({
   return (
     <div className={cn("flex items-center gap-4 flex-wrap", className)}>
       <Select value={filters.status} onValueChange={handleStatusChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Status do estoque" />
         </SelectTrigger>
         <SelectContent>

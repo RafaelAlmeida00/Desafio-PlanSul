@@ -80,8 +80,8 @@ GET /api/produtos/:id
 
 **Codigos de Status:**
 - 200: Sucesso
-- 404: Produto nao encontrado
-- 400: ID invalido
+- 400: ID invalido (`VALIDATION_ERROR`)
+- 404: Produto nao encontrado (`NOT_FOUND`)
 
 ### Criar Produto
 
@@ -93,11 +93,11 @@ POST /api/produtos
 
 | Campo | Tipo | Obrigatorio | Descricao |
 |-------|------|-------------|-----------|
-| sku | string | Sim | Codigo unico do produto |
-| nome | string | Sim | Nome do produto |
+| sku | string | Sim | Codigo unico do produto (max 50 caracteres) |
+| nome | string | Sim | Nome do produto (max 255 caracteres) |
 | categoria_id | number | Nao | ID da categoria |
 | estoque_minimo | number | Nao | Quantidade minima em estoque |
-| marca | string | Nao | Marca do produto |
+| marca | string | Nao | Marca do produto (max 100 caracteres) |
 
 **Exemplo Request:**
 ```bash
@@ -125,9 +125,13 @@ curl -X POST "http://localhost:3000/api/produtos" \
 }
 ```
 
+> **Nota:** Ao criar um produto, um registro de estoque e automaticamente criado com quantidade = 0.
+
 **Codigos de Status:**
 - 201: Produto criado
-- 400: SKU ou nome ausentes
+- 400: SKU ou nome ausentes (`VALIDATION_ERROR`)
+- 409: SKU ja existe (`UNIQUE_VIOLATION`)
+- 409: Categoria invalida (`FK_VIOLATION`)
 
 ### Atualizar Produto
 
@@ -149,7 +153,8 @@ curl -X PUT "http://localhost:3000/api/produtos/1" \
 
 **Codigos de Status:**
 - 200: Produto atualizado
-- 404: Produto nao encontrado
+- 404: Produto nao encontrado (`NOT_FOUND`)
+- 409: SKU ja existe (`UNIQUE_VIOLATION`)
 
 ### Excluir Produto
 
@@ -159,7 +164,16 @@ DELETE /api/produtos/:id
 
 **Codigos de Status:**
 - 204: Produto excluido
-- 404: Produto nao encontrado
+- 404: Produto nao encontrado (`NOT_FOUND`)
+- 409: Produto possui movimentacoes de estoque associadas (`FK_VIOLATION`)
+
+**Exemplo Response (409):**
+```json
+{
+  "error": "Nao e possivel excluir produto porque possui movimentacoes de estoque associadas. Exclua os movimentacoes de estoque primeiro.",
+  "code": "FK_VIOLATION"
+}
+```
 
 ---
 
@@ -197,6 +211,11 @@ GET /api/categorias
 GET /api/categorias/:id
 ```
 
+**Codigos de Status:**
+- 200: Sucesso
+- 400: ID invalido (`VALIDATION_ERROR`)
+- 404: Categoria nao encontrada (`NOT_FOUND`)
+
 ### Criar Categoria
 
 ```http
@@ -207,7 +226,7 @@ POST /api/categorias
 
 | Campo | Tipo | Obrigatorio | Descricao |
 |-------|------|-------------|-----------|
-| nome | string | Sim | Nome da categoria |
+| nome | string | Sim | Nome da categoria (max 100 caracteres) |
 | descricao | string | Nao | Descricao da categoria |
 
 **Exemplo Request:**
@@ -220,16 +239,38 @@ curl -X POST "http://localhost:3000/api/categorias" \
   }'
 ```
 
+**Codigos de Status:**
+- 201: Categoria criada
+- 400: Nome ausente (`VALIDATION_ERROR`)
+- 409: Nome ja existe (`UNIQUE_VIOLATION`)
+
 ### Atualizar Categoria
 
 ```http
 PUT /api/categorias/:id
 ```
 
+**Codigos de Status:**
+- 200: Categoria atualizada
+- 404: Categoria nao encontrada (`NOT_FOUND`)
+
 ### Excluir Categoria
 
 ```http
 DELETE /api/categorias/:id
+```
+
+**Codigos de Status:**
+- 204: Categoria excluida
+- 404: Categoria nao encontrada (`NOT_FOUND`)
+- 409: Categoria possui produtos associados (`FK_VIOLATION`)
+
+**Exemplo Response (409):**
+```json
+{
+  "error": "Nao e possivel excluir categoria porque possui produtos associados. Exclua os produtos primeiro.",
+  "code": "FK_VIOLATION"
+}
 ```
 
 ---
@@ -281,11 +322,18 @@ curl "http://localhost:3000/api/estoque?abaixo_minimo=true"
 GET /api/estoque/:id
 ```
 
+**Codigos de Status:**
+- 200: Sucesso
+- 400: ID invalido
+- 404: Estoque nao encontrado
+
 ### Criar Estoque
 
 ```http
 POST /api/estoque
 ```
+
+> **Nota:** O estoque e criado automaticamente ao criar um produto. Use este endpoint apenas se precisar criar estoque manualmente para um produto existente.
 
 **Body Parameters:**
 
@@ -346,6 +394,11 @@ curl "http://localhost:3000/api/estoque_movimentacoes?tipo=entrada&produto_id=1"
 GET /api/estoque_movimentacoes/:id
 ```
 
+**Codigos de Status:**
+- 200: Sucesso
+- 400: ID invalido
+- 404: Movimentacao nao encontrada
+
 ### Registrar Movimentacao
 
 ```http
@@ -384,26 +437,123 @@ curl -X POST "http://localhost:3000/api/estoque_movimentacoes" \
 
 **Codigos de Status:**
 - 201: Movimentacao registrada
-- 400: Dados invalidos ou estoque insuficiente para saida
-- 404: Estoque do produto nao encontrado
+- 400: Dados invalidos (`VALIDATION_ERROR`)
+- 400: Estoque insuficiente para saida (`ESTOQUE_INSUFICIENTE`)
+- 404: Estoque do produto nao encontrado (`NOT_FOUND`)
+- 409: Requisicao ja em processamento (`REQUEST_IN_PROGRESS`)
+
+---
+
+## Idempotencia
+
+O endpoint `POST /api/estoque_movimentacoes` possui protecao automatica contra requisicoes duplicadas baseada no conteudo do body.
+
+### Como funciona
+
+1. A API gera um hash SHA-256 do body da requisicao
+2. Se o mesmo body for enviado novamente dentro de 30 segundos, a resposta cacheada e retornada
+3. Apos 30 segundos, o cache expira e uma nova movimentacao pode ser criada com os mesmos dados
+4. Respostas cacheadas incluem o header `Idempotency-Replayed: true`
+
+### Beneficios
+
+- Protecao automatica contra double-click do usuario
+- Evita movimentacoes duplicadas em caso de retry automatico
+- Nao requer configuracao no cliente
+
+### Exemplo
+
+```bash
+# Primeira requisicao - processada normalmente (cria movimentacao)
+curl -X POST "http://localhost:3000/api/estoque_movimentacoes" \
+  -H "Content-Type: application/json" \
+  -d '{"produto_id": 1, "quantidade": 100, "tipo": "entrada"}'
+
+# Mesma requisicao dentro de 30s - retorna resposta cacheada (NAO cria nova movimentacao)
+curl -X POST "http://localhost:3000/api/estoque_movimentacoes" \
+  -H "Content-Type: application/json" \
+  -d '{"produto_id": 1, "quantidade": 100, "tipo": "entrada"}'
+# Response Header: Idempotency-Replayed: true
+
+# Apos 30 segundos - cria nova movimentacao
+curl -X POST "http://localhost:3000/api/estoque_movimentacoes" \
+  -H "Content-Type: application/json" \
+  -d '{"produto_id": 1, "quantidade": 100, "tipo": "entrada"}'
+```
 
 ---
 
 ## Codigos de Erro
 
+### Codigos HTTP
+
 | Codigo | Descricao |
 |--------|-----------|
 | 400 | Requisicao invalida (dados faltando ou incorretos) |
 | 404 | Recurso nao encontrado |
+| 409 | Conflito (violacao de unicidade ou chave estrangeira) |
 | 500 | Erro interno do servidor |
 
-**Formato de Erro:**
+### Codigos de Erro da API
+
+| Codigo | Status HTTP | Descricao |
+|--------|-------------|-----------|
+| VALIDATION_ERROR | 400 | Dados de entrada invalidos |
+| NOT_FOUND | 404 | Recurso nao encontrado |
+| UNIQUE_VIOLATION | 409 | Valor duplicado (ex: SKU ja existe) |
+| FK_VIOLATION | 409 | Violacao de chave estrangeira |
+| ESTOQUE_INSUFICIENTE | 400 | Estoque insuficiente para saida |
+| DATABASE_ERROR | 500 | Erro de banco de dados |
+| INTERNAL_ERROR | 500 | Erro interno do servidor |
+| REQUEST_IN_PROGRESS | 409 | Requisicao duplicada em processamento |
+
+### Formato de Erro
+
 ```json
 {
-  "error": "Mensagem descritiva do erro"
+  "error": "Mensagem descritiva do erro",
+  "code": "CODIGO_DO_ERRO"
 }
 ```
 
-**Erros Especificos de Movimentacao:**
-- `Estoque insuficiente. Disponivel: X, Solicitado: Y`
-- `Estoque nao encontrado para o produto X`
+### Exemplos de Erros
+
+**Validacao (400):**
+```json
+{
+  "error": "SKU e Nome sao obrigatorios",
+  "code": "VALIDATION_ERROR"
+}
+```
+
+**Nao encontrado (404):**
+```json
+{
+  "error": "Produto com ID 999 nao encontrado(a)",
+  "code": "NOT_FOUND"
+}
+```
+
+**Violacao de unicidade (409):**
+```json
+{
+  "error": "Ja existe um registro com SKU: \"TECH-001\"",
+  "code": "UNIQUE_VIOLATION"
+}
+```
+
+**Estoque insuficiente (400):**
+```json
+{
+  "error": "Estoque insuficiente. Disponivel: 5 unidades. Solicitado: 10 unidades.",
+  "code": "ESTOQUE_INSUFICIENTE"
+}
+```
+
+**Violacao de chave estrangeira (409):**
+```json
+{
+  "error": "Nao e possivel excluir categoria porque possui produtos associados. Exclua os produtos primeiro.",
+  "code": "FK_VIOLATION"
+}
+```

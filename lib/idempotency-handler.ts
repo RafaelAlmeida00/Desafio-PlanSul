@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   idempotencyStore,
-  IDEMPOTENCY_KEY_HEADER,
   IDEMPOTENCY_REPLAY_HEADER,
-  isValidIdempotencyKey,
   IdempotencyResponse,
+  generateIdempotencyKeyFromData,
 } from './idempotency';
 
 export interface IdempotencyResult {
@@ -13,30 +12,12 @@ export interface IdempotencyResult {
   idempotencyKey?: string;
 }
 
-export function checkIdempotency(request: NextRequest): IdempotencyResult {
-  const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER);
+export function checkIdempotency(body: unknown): IdempotencyResult {
+  const idempotencyKey = generateIdempotencyKeyFromData(body);
 
-  // Se não tem key, processar normalmente (sem idempotência)
-  if (!idempotencyKey) {
-    return { shouldProcess: true };
-  }
-
-  // Validar formato do key
-  if (!isValidIdempotencyKey(idempotencyKey)) {
-    return {
-      shouldProcess: false,
-      cachedResponse: NextResponse.json(
-        { error: 'Idempotency-Key inválido. Use formato UUID v4.', code: 'INVALID_IDEMPOTENCY_KEY' },
-        { status: 400 }
-      ),
-    };
-  }
-
-  // Verificar se já existe resposta cacheada
   const existingRecord = idempotencyStore.get(idempotencyKey);
 
   if (existingRecord && existingRecord.response.status !== 0) {
-    // Retornar resposta cacheada
     const response = NextResponse.json(existingRecord.response.body, {
       status: existingRecord.response.status,
     });
@@ -49,11 +30,9 @@ export function checkIdempotency(request: NextRequest): IdempotencyResult {
     };
   }
 
-  // Tentar adquirir lock para processar
   const acquired = idempotencyStore.setProcessing(idempotencyKey);
 
   if (!acquired) {
-    // Requisição duplicada em andamento
     return {
       shouldProcess: false,
       cachedResponse: NextResponse.json(
@@ -70,7 +49,6 @@ export async function saveIdempotencyResponse(
   idempotencyKey: string,
   response: NextResponse
 ): Promise<void> {
-  // Clonar response para ler o body
   const clonedResponse = response.clone();
 
   let body: unknown;

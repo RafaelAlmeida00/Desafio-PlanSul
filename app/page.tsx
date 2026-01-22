@@ -23,7 +23,7 @@ export default function Home() {
         </div>
 
         <Tabs defaultValue="categorias" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
             <TabsTrigger value="categorias">Categorias</TabsTrigger>
             <TabsTrigger value="produtos">Produtos</TabsTrigger>
             <TabsTrigger value="estoque">Estado do Estoque</TabsTrigger>

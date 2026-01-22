@@ -30,8 +30,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  // Verificar idempotência
-  const idempotencyResult = checkIdempotency(request);
+  let body: { produto_id?: unknown; quantidade?: unknown; tipo?: unknown };
+
+  try {
+    body = await request.json();
+  } catch {
+    return errorResponse(new ValidationError('Body inválido'));
+  }
+
+  const { produto_id, quantidade, tipo } = body;
+
+  const idempotencyResult = checkIdempotency(body);
 
   if (!idempotencyResult.shouldProcess) {
     return idempotencyResult.cachedResponse!;
@@ -40,47 +49,40 @@ export async function POST(request: NextRequest) {
   const { idempotencyKey } = idempotencyResult;
 
   try {
-    const body = await request.json();
-    const { produto_id, quantidade, tipo } = body;
-
-    // Validações
     if (!produto_id) {
       const response = errorResponse(new ValidationError('produto_id é obrigatório'));
       if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
       return response;
     }
-    if (quantidade === undefined || quantidade === null || quantidade <= 0) {
+    if (quantidade === undefined || quantidade === null || Number(quantidade) <= 0) {
       const response = errorResponse(new ValidationError('quantidade deve ser maior que zero'));
       if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
       return response;
     }
-    if (!tipo || !['entrada', 'saida'].includes(tipo)) {
+    if (!tipo || !['entrada', 'saida'].includes(tipo as string)) {
       const response = errorResponse(new ValidationError('tipo deve ser "entrada" ou "saida"'));
       if (idempotencyKey) clearIdempotencyKey(idempotencyKey);
       return response;
     }
 
     const newMovimentacao = await service.createEstoqueMovimentacoes({
-      produto_id: BigInt(produto_id),
+      produto_id: BigInt(produto_id as string | number),
       quantidade: Number(quantidade),
-      tipo,
+      tipo: tipo as 'entrada' | 'saida',
     });
 
     const response = successResponse(newMovimentacao, 201);
 
-    // Salvar resposta para idempotência
     if (idempotencyKey) {
       await saveIdempotencyResponse(idempotencyKey, response);
     }
 
     return response;
   } catch (error) {
-    // Em caso de erro, limpar o lock de idempotência
     if (idempotencyKey) {
       clearIdempotencyKey(idempotencyKey);
     }
 
-    // Tratar erros específicos do service
     if (error instanceof service.EstoqueInsuficienteError) {
       return errorResponse(
         new BusinessRuleError(error.message, 'ESTOQUE_INSUFICIENTE')
